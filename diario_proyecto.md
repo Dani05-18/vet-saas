@@ -168,6 +168,36 @@ Bienvenido al diario de arquitectura y desarrollo de la plataforma SaaS Multiten
 
 ---
 
+### Paso 5: Vinculación y Publicación en GitHub
+
+#### 1. ¿Qué hicimos?
+1. **Estandarización de Rama**: Renombrado de la rama raíz a `main` (`git branch -M main`), alineándola con las convenciones estándar de GitHub.
+2. **Asignación del Repositorio Remoto**: Vinculación de la URL remota oficial (`https://github.com/Dani05-18/vet-saas.git`) como origen (`origin`).
+3. **Publicación y Rastreo (`git push`)**: Despliegue de los commits locales hacia la rama remota `origin/main` configurando upstream tracking.
+4. **Verificación de Integridad Remota**: El repositorio ya es accesible públicamente/privadamente en GitHub con todos los archivos base, documentación y exclusión de secretos.
+
+#### 2. Comandos Ejecutados
+- **Renombrar rama a main**:
+  ```bash
+  git branch -M main
+  ```
+- **Conectar con GitHub**:
+  ```bash
+  git remote add origin https://github.com/Dani05-18/vet-saas.git
+  ```
+- **Publicar en GitHub**:
+  ```bash
+  git push -u origin main
+  ```
+
+#### 3. Archivos Clave Creados / Modificados
+| Archivo | Propósito / Justificación Arquitectónica |
+| :--- | :--- |
+| `diario_proyecto.md` | Actualización obligatoria de la bitácora con el registro del Paso 5. |
+
+---
+
+
 
 
 
