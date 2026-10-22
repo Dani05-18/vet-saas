@@ -197,6 +197,40 @@ Bienvenido al diario de arquitectura y desarrollo de la plataforma SaaS Multiten
 
 ---
 
+### Paso 6: Migración Inicial Versionada y Verificación con Prisma Studio
+
+#### 1. ¿Qué hicimos?
+1. **Verificación de Conectividad en `.env`**: Confirmación de que `DATABASE_URL` apunta correctamente al contenedor local de PostgreSQL (`postgresql://postgres:postgres_password@localhost:5432/vet_saas_db?schema=public`).
+2. **Creación de la Migración Inicial (`20261022221900_init`)**: Generación formal del archivo SQL de migración en `prisma/migrations/20261022221900_init/migration.sql`, declarando los enums `GlobalRole` y `TenantRole`, y las tablas `tenants`, `users` y `tenant_users` en el schema `public`.
+3. **Ejecución y Registro de Migración**: Aplicación de la migración en PostgreSQL creando la tabla de historial `_prisma_migrations`, registrando la suma de verificación y asegurando que `npx prisma migrate status` reporte sincronización total (`Database schema is up to date!`).
+4. **Configuración de Prisma Studio**: Incorporación del script `"prisma:studio": "prisma studio"` en `package.json` para permitir la inspección visual de las tablas y datos desde el navegador web en el puerto `5555`.
+
+#### 2. Comandos Ejecutados / Disponibles
+- **Aplicación de migraciones pendientes**:
+  ```bash
+  npx prisma migrate deploy
+  ```
+- **Verificación de estado de migraciones**:
+  ```bash
+  npx prisma migrate status
+  ```
+- **Apertura de Prisma Studio (interfaz gráfica)**:
+  ```bash
+  npx prisma studio
+  # o alternativamente:
+  npm run prisma:studio
+  ```
+
+#### 3. Archivos Clave Creados / Modificados
+| Archivo | Propósito / Justificación Arquitectónica |
+| :--- | :--- |
+| `prisma/migrations/20261022221900_init/migration.sql` | Historial SQL declarativo versionado de la base de datos para ambientes locales y de producción. |
+| `package.json` | Incorporación del script `prisma:studio` para inspección rápida de base de datos. |
+| `diario_proyecto.md` | Bitácora actualizada con el registro del Paso 6. |
+
+---
+
+
 
 
 
