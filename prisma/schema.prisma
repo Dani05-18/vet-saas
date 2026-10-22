@@ -1,0 +1,98 @@
+// ==============================================================================
+// CONFIGURACIÓN DE PRISMA ORM - ARQUITECTURA MULTITENANT (MULTI-SCHEMA)
+// ==============================================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas  = ["public"]
+}
+
+// ==============================================================================
+// ENUMS GLOBALES (SCHEMA: public)
+// ==============================================================================
+
+enum GlobalRole {
+  SUPERADMIN // Administrador del SaaS / Plataforma general
+  USER       // Usuario estándar de la plataforma
+
+  @@schema("public")
+}
+
+enum TenantRole {
+  OWNER        // Dueño / Administrador principal de la veterinaria
+  VET          // Médico Veterinario
+  ASSISTANT    // Asistente / Auxiliar técnico
+  RECEPTIONIST // Recepcionista / Atención al cliente
+  STAFF        // Personal general
+
+  @@schema("public")
+}
+
+// ==============================================================================
+// MODELOS GLOBALES (SCHEMA: public)
+// ==============================================================================
+
+/// Representa a cada clínica veterinaria (Tenant) registrada en la plataforma.
+model Tenant {
+  id           String   @id @default(cuid())
+  name         String   // Nombre comercial de la veterinaria (ej: "Clínica Veterinaria San Patricio")
+  slug         String   @unique // Identificador para subdominio (ej: "san-patricio")
+  schemaName   String   @unique // Nombre físico del schema en PostgreSQL (ej: "tenant_san_patricio")
+  customDomain String?  @unique // Dominio personalizado opcional (ej: "vetpatricio.com")
+  logoUrl      String?
+  phone        String?
+  email        String?
+  address      String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relaciones
+  memberships TenantUser[]
+
+  @@schema("public")
+  @@map("tenants")
+}
+
+/// Usuario global de la plataforma con credenciales únicas de acceso.
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String?
+  passwordHash String
+  globalRole   GlobalRole  @default(USER)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relación con los tenants a los que pertenece
+  memberships TenantUser[]
+
+  @@schema("public")
+  @@map("users")
+}
+
+/// Tabla pivote de membresía entre un Usuario y un Tenant, con su rol local específico.
+model TenantUser {
+  id        String     @id @default(cuid())
+  tenantId  String
+  userId    String
+  role      TenantRole @default(STAFF)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@schema("public")
+  @@map("tenant_users")
+}
+
